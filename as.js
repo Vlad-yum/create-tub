@@ -93,6 +93,77 @@ window.addEventListener('DOMContentLoaded', function() {
 
 
          setClock('timer',deadline);
-         
 
+
+         //modal
+
+         let more  = document.querySelector('.more'),
+             overlay = document.querySelector('.overlay'),
+             close = document.querySelector('.popup-close');
+
+
+             more.addEventListener('click',function(){
+                 overlay.style.display ="block";
+                 this.classList.add('more-splash');
+                 document.body.style.overflow = "hidden";
+             });
+
+             close.addEventListener('click',function(){
+                 overlay.style.display = "none";
+                more.classList.remove('more-splash');
+                document.body.style.overflow = "";
+             });
+
+         //form
+
+
+         let message = {
+             loading: 'загрузка',
+             success:'Спасибо,мы с вами свяжемся',
+             failure:'Что-то пошло не не так'
+         }
+
+         let form = document.querySelector('.main-form'),
+             input=  form.getElementsByTagName('input'),
+             statusMassege = document.createElement('div');
+
+             statusMassege.classList.add('status');
+
+             form.addEventListener('submit',function(event){
+               event.preventDefault();
+               form.appendChild(statusMassege);
+
+               let request = new XMLHttpRequest();
+               request.open('POST','server.php');
+               request.setRequestHeader('Content-Type','application/json; charset = utf-8');
+
+               let formData = new FormData(form);
+
+               let obj = {};
+
+               formData.forEach(function(value,key){
+                   obj[key]= value;
+               });
+
+               let json = JSON.stringify(obj);
+               request.send(json);
+
+               request.addEventListener('readystatechange',function(){
+                   if (request.readyState<4){
+                       statusMassege.innerHTML = message.loading;
+                   } else if(request.readyState === 4 && request.readyState==200){
+                    statusMassege.innerHTML = message.success;
+                }else{
+                    statusMassege.innerHTML = message.failure;
+
+                }
+               });
+
+                   for(let i= 0; i<input.length; i++){
+                       input[i].value = '';
+                   }
+
+             });
+         
+             
 });
